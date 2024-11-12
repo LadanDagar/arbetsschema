@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Önskemål för arbetsdagar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <h1>Önskemål för arbetsdagar</h1>
+    <form id="workPreferencesForm">
+        <label for="personName">Namn:</label>
+        <input type="text" id="personName" required>
+
+        <label for="wishDays">Välj önskade arbetsdagar:</label>
+        <input type="text" id="wishDays" placeholder="Välj datum" readonly>
+
+        <label for="blockedDays">Välj blockerade arbetsdagar:</label>
+        <input type="text" id="blockedDays" placeholder="Välj datum" readonly>
+
+        <button type="submit">Skicka in</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Initierar Flatpickr för datumval
+        flatpickr("#wishDays", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            minDate: "2024-01-01",
+            maxDate: "2024-07-31",
+            disable: [function(date) {
+                return (date.getDay() === 0 || date.getDay() === 6); // Inaktivera helger
+            }]
+        });
+
+        flatpickr("#blockedDays", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            minDate: "2024-01-01",
+            maxDate: "2024-07-31",
+            disable: [function(date) {
+                return (date.getDay() === 0 || date.getDay() === 6); // Inaktivera helger
+            }]
+        });
+
+        // Skicka data till Google Sheets via Google Apps Script
+        document.getElementById('workPreferencesForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Förhindrar sidomladdning
+
+            const name = document.getElementById('personName').value;
+            const wishDays = document.getElementById('wishDays').value.split(', ');
+            const blockedDays = document.getElementById('blockedDays').value.split(', ');
+
+            // Skapa ett objekt med datan
+            const data = {
+                name: name,
+                wishDays: wishDays,
+                blockedDays: blockedDays
+            };
+
+            // Skicka datan till Google Apps Script-webbappen
+            fetch('<https://script.google.com/macros/s/AKfycbzgISh8WmoS02y-2wRZdKb97YzTdu1Z7zut74mrbNLm_K1qE6laDWanf1BxNW7ZHJ6ovQ/exec>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('Data sparad:', result);
+                alert('Dina data har sparats!');
+            })
+            .catch(error => {
+                console.error('Fel vid sparande:', error);
+                alert('Det gick inte att spara datan. Försök igen.');
+            });
+        });
+    </script>
+</body>
+</html>
