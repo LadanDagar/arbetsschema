@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Önskemål för arbetsdagar med kalender</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            display: block;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Önskemål för arbetsdagar</h1>
+    <form id="workPreferencesForm">
+        <label for="personName">Namn:</label>
+        <input type="text" id="personName" required>
+
+        <label for="wishDays">Välj önskade arbetsdagar:</label>
+        <input type="text" id="wishDays" placeholder="Välj datum" readonly>
+
+        <label for="blockedDays">Välj blockerade arbetsdagar:</label>
+        <input type="text" id="blockedDays" placeholder="Välj datum" readonly>
+
+        <button type="submit">Skicka in</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Funktion för att inaktivera lördagar och söndagar
+        function disableWeekends(date) {
+            return (date.getDay() === 0 || date.getDay() === 6);
+        }
+
+        // Initierar Flatpickr för önskade dagar
+        flatpickr("#wishDays", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            minDate: "2024-01-01", // Första möjliga datum
+            maxDate: "2024-07-31", // Sista möjliga datum
+            disable: [disableWeekends] // Inaktiverar helger
+        });
+
+        // Initierar Flatpickr för blockerade dagar
+        flatpickr("#blockedDays", {
+            mode: "multiple",
+            dateFormat: "Y-m-d",
+            minDate: "2024-01-01", // Första möjliga datum
+            maxDate: "2024-07-31", // Sista möjliga datum
+            disable: [disableWeekends] // Inaktiverar helger
+        });
+
+        document.getElementById('workPreferencesForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Förhindrar sidomladdning
+
+            const name = document.getElementById('personName').value;
+            const wishDays = document.getElementById('wishDays').value.split(', ');
+            const blockedDays = document.getElementById('blockedDays').value.split(', ');
+
+            console.log("Namn:", name);
+            console.log("Önskade arbetsdagar:", wishDays);
+            console.log("Blockerade arbetsdagar:", blockedDays);
+
+            // Här kan du lägga till logik för att spara data eller hantera det på andra sätt.
+        });
+    </script>
+</body>
+</html>
